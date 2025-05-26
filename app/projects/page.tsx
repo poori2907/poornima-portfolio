@@ -1,42 +1,9 @@
 import Link from "next/link";
 import React from "react";
-import { allProjects } from "contentlayer/generated";
 import { Navigation } from "../components/nav";
 import { Card } from "../components/card";
-import { Article } from "./article";
-import { Redis } from "@upstash/redis";
-import { Eye } from "lucide-react";
 
-const redis = Redis.fromEnv();
-
-export const revalidate = 60;
-export default async function ProjectsPage() {
-  const views = (
-    await redis.mget<number[]>(
-      ...allProjects.map((p) => ["pageviews", "projects", p.slug].join(":")),
-    )
-  ).reduce((acc, v, i) => {
-    acc[allProjects[i].slug] = v ?? 0;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const featured = allProjects.find((project) => project.slug === "unkey")!;
-  const top2 = allProjects.find((project) => project.slug === "planetfall")!;
-  const top3 = allProjects.find((project) => project.slug === "highstorm")!;
-  const sorted = allProjects
-    .filter((p) => p.published)
-    .filter(
-      (project) =>
-        project.slug !== featured.slug &&
-        project.slug !== top2.slug &&
-        project.slug !== top3.slug,
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.date ?? Number.POSITIVE_INFINITY).getTime() -
-        new Date(a.date ?? Number.POSITIVE_INFINITY).getTime(),
-    );
-
+export default function ProjectsPage() {
   return (
     <div className="relative pb-16">
       <Navigation />
@@ -46,91 +13,39 @@ export default async function ProjectsPage() {
             Projects
           </h2>
           <p className="mt-4 text-zinc-400">
-            Some of the projects are from work and some are on my own time.
+            Here are some project slots. Add your projects in the future!
           </p>
         </div>
         <div className="w-full h-px bg-zinc-800" />
-
-        <div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2 ">
-          <Card>
-            <Link href={`/projects/${featured.slug}`}>
-              <article className="relative w-full h-full p-4 md:p-8">
+        <div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <div className="relative w-full h-full p-4 md:p-8 animate-pulse min-h-[300px]">
                 <div className="flex items-center justify-between gap-2">
-                  <div className="text-xs text-zinc-100">
-                    {featured.date ? (
-                      <time dateTime={new Date(featured.date).toISOString()}>
-                        {Intl.DateTimeFormat(undefined, {
-                          dateStyle: "medium",
-                        }).format(new Date(featured.date))}
-                      </time>
-                    ) : (
-                      <span>SOON</span>
-                    )}
-                  </div>
-                  <span className="flex items-center gap-1 text-xs text-zinc-500">
-                    <Eye className="w-4 h-4" />{" "}
-                    {Intl.NumberFormat("en-US", { notation: "compact" }).format(
-                      views[featured.slug] ?? 0,
-                    )}
-                  </span>
+                  <div className="text-xs text-zinc-100 opacity-50">Coming Soon</div>
                 </div>
-
-                <h2
-                  id="featured-post"
-                  className="mt-4 text-3xl font-bold text-zinc-100 group-hover:text-white sm:text-4xl font-display"
-                >
-                  {featured.title}
+                <h2 className="mt-4 text-2xl font-bold text-zinc-100 opacity-60 group-hover:text-white sm:text-3xl font-display">
+                  Project Title
                 </h2>
-                <p className="mt-4 leading-8 duration-150 text-zinc-400 group-hover:text-zinc-300">
-                  {featured.description}
+                <p className="mt-4 leading-8 duration-150 text-zinc-400 opacity-50 group-hover:text-zinc-300">
+                  Project description will appear here.
                 </p>
-                <div className="absolute bottom-4 md:bottom-8">
-                  <p className="hidden text-zinc-200 hover:text-zinc-50 lg:block">
-                    Read more <span aria-hidden="true">&rarr;</span>
-                  </p>
+                <div className="absolute bottom-4 md:bottom-8 flex gap-2">
+                  <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-700 text-zinc-300 opacity-50 cursor-not-allowed" aria-label="Live Link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                  </a>
+                  <a href="#" className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-700 text-zinc-300 opacity-50 cursor-not-allowed" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                    </svg>
+                  </a>
                 </div>
-              </article>
-            </Link>
-          </Card>
-
-          <div className="flex flex-col w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0 ">
-            {[top2, top3].map((project) => (
-              <Card key={project.slug}>
-                <Article project={project} views={views[project.slug] ?? 0} />
-              </Card>
-            ))}
-          </div>
-        </div>
-        <div className="hidden w-full h-px md:block bg-zinc-800" />
-
-        <div className="grid grid-cols-1 gap-4 mx-auto lg:mx-0 md:grid-cols-3">
-          <div className="grid grid-cols-1 gap-4">
-            {sorted
-              .filter((_, i) => i % 3 === 0)
-              .map((project) => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
-          </div>
-          <div className="grid grid-cols-1 gap-4">
-            {sorted
-              .filter((_, i) => i % 3 === 1)
-              .map((project) => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
-          </div>
-          <div className="grid grid-cols-1 gap-4">
-            {sorted
-              .filter((_, i) => i % 3 === 2)
-              .map((project) => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
-          </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
