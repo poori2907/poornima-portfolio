@@ -39,10 +39,10 @@ export default function Home() {
           Software Developer passionate about building innovative solutions. Check out my{" "}
           <Link
             target="_blank"
-            href="https://leetcode.com/poori2907"
+            href="https://linkedin.com/in/poornimamudgal"
             className="underline duration-500 hover:text-zinc-300"
           >
-            LeetCode
+            LinkedIn
           </Link> profile.
         </h2>
       </div>
