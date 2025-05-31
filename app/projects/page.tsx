@@ -13,7 +13,7 @@ export default function ProjectsPage() {
             Projects
           </h2>
           <p className="mt-4 text-zinc-400">
-            Here are some project slots. Add your projects in the future!
+            Here are some of my projects !!
           </p>
         </div>
         <div className="w-full h-px bg-zinc-800" />
